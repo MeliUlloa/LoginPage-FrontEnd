@@ -3,7 +3,7 @@
 <template>
   <div>
     <!--{{ userStore.user?.user }}: Muestra el nombre del usuario que ha iniciado sesión.-->
-    <h1>Bienvenido, {{ userStore.user.user }}</h1>
+    <h1>Bienvenido, {{ userStore.user?.username }}</h1>
   </div>
 </template>
 
