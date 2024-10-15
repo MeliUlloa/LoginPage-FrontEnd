@@ -8,8 +8,8 @@ import HomeView from '@/views/HomeView.vue'
 // y /home carga la vista principal después de iniciar sesión.
 
 const routes = [
-  { path: '/', name: 'Login', component: LoginPage },
-  { path: '/home', name: 'Home', component: HomeView }
+  { path: '/login', name: 'Login', component: LoginPage },
+  { path: '/', name: 'Home', component: HomeView }
 ]
 
 // Crea una instancia de Vue Router.

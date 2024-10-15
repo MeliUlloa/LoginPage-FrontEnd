@@ -1,3 +1,39 @@
+<script setup lang="ts">
+// import { reactive } from 'vue'
+// import { User } from '@/models/User';
+
+//importacione slocales
+import { useUserStore } from '@/stores/userStore';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
+
+//importaciones d elibrerias 
+import { Form, Field } from 'vee-validate';
+import * as Yup from 'yup'
+
+
+const uStore = useUserStore()
+const router = useRouter()
+const authStore = useAuthStore()
+
+const schema = Yup.object().shape({
+  username: Yup.string().required('Usuario Requerido'),
+  password: Yup.string().required('Password es Requerido'),
+})
+
+if (authStore.auth.data) {
+  router.push('/')
+}
+
+function handleSubmit(values: any, { setErrors }: any) {
+  const { username, password } = values;
+  return authStore.login(username, password).then(()=> {
+    router.push('/')
+  })
+  .catch (error => setErrors ({ apiError: error }))
+}
+
+</script>
 <!-- Este es el componente que representa el formulario de inicio de sesión. -->
 
 <!--v-model="user": Utiliza dos enlaces de datos para capturar la información del usuario-->
@@ -5,36 +41,81 @@
 <!--handleSubmit(): Este método maneja el envío del formulario, guarda los datos en el estado global 
  (Pinia) y redirige a la página de inicio.-->
 <template>
-  <form @submit.prevent="handleSubmit" class="login-form">
+  <Form @submit.prevent="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
     <h1>Login</h1>
     <div class="input-bx">
-      <input v-model="user" type="text" placeholder="Usuario" required />
+      <Field name="username" type="text" :class="{ 'is-invalid': errors.username || errors.apierror}" required />
       <ion-icon class="icon" name="person-circle"></ion-icon>
+      <div class="invalid-feedback">{{ errors.username }}</div>
     </div>
+
     <div class="input-bx">
-      <input v-model="password" type="password" placeholder="Contraseña" required />
+      <Field name="password" type="password" :class="{ 'is-invalid': errors.password || errors.apierror}"  placeholder="Contraseña" required />
       <ion-icon class="icon" name="lock-closed"></ion-icon>
+      <div class="invalid-feedback">{{ errors.password }}</div>
     </div>
+
     <div class="remember-forgot">
-      <label><input v-model="remember" type="checkbox" /> Recordarme</label>
+      <label><input type="checkbox" /> Recordarme</label>
       <a href="#">Olvidaste tu contraseña</a>
     </div>
-    <button type="submit" class="btn">Ingresar</button>
-  </form>
+
+    <button type="submit" class="btn">
+      <span v-show="!isSubmitting" class="loader"></span>
+      <p v-show="!isSubmitting">Ingresar</p></button>
+      <div v-if="errors.apiError" class="error-alert">{{ errors.apiError }}</div>
+  </Form>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
 
-const user = ref('')
-const password = ref('')
-const remember = ref(false)
-
-function handleSubmit() {
-  console.log(
-    `Usuario: ${user.value}, Contraseña: ${password.value}, Recordarme: ${remember.value}`
-  )
+<style scoped>
+.input-bx input.is-invalid{
+  width: 100%;
+  height: 100%;
+  background: rgba(250, 150, 150, 0.1);
+  border: 2px solid rgba(255, 0, 0, 0.2);
+  color: red;
 }
-</script>
 
-<style scoped></style>
+.input-bx input.is-invalid::placeholder {
+  color: red;
+}
+
+.input-bx .invalid-feedback {
+  padding: 0px 16 px;
+  margin: 0;
+  color: red;
+  font-weight: 300;
+}
+
+.loader {
+  margin: auto 0;
+  width: 24px;
+  height: 24px;
+  border: 4px solid purple;
+  border-bottom-color: transparent ;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+}
+
+.error-alert {
+  margin: 16px 0 0 0;
+  width: 100%;
+  background: transparent;
+  color: red;
+  text-align: center;
+  font-weight: 400;
+  }
+
+</style>
