@@ -30,7 +30,10 @@ function handleSubmit(values: any, { setErrors }: any) {
   return authStore.login(username, password).then(()=> {
     router.push('/')
   })
-  .catch (error => setErrors ({ apiError: error }))
+  .catch((error: any) => {
+      // Manejar el error de la API directamente en los errores de VeeValidate
+      setErrors({ apiError: error.message });
+    });
 }
 
 </script>
@@ -41,7 +44,7 @@ function handleSubmit(values: any, { setErrors }: any) {
 <!--handleSubmit(): Este método maneja el envío del formulario, guarda los datos en el estado global 
  (Pinia) y redirige a la página de inicio.-->
 <template>
-  <Form @submit.prevent="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
+  <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
     <h1>Login</h1>
     <div class="input-bx">
       <Field name="username" type="text" :class="{ 'is-invalid': errors.username || errors.apierror}" required />

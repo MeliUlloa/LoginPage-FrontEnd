@@ -31,7 +31,7 @@ const createUser = () => {
     <!-- Verificamos si el usuario está autenticado -->
     <div v-if="authStore.auth.data">
       <h1>Bienvenido, {{ authStore.auth.data.username }}</h1>
-      <p><strong>Rol:</strong> {{ authStore.auth.data.role }}</p>
+      <p><strong>Rol:</strong> {{ authStore.auth.data.isAdmin }}</p>
 
       <!-- Mostrar detalles del token desde sesionStore -->
       <div class="session-info">
@@ -46,10 +46,10 @@ const createUser = () => {
       <div class="user-list">
         <h2>Listado de usuarios</h2>
         <ul>
-          <li v-for="user in userStore.users" :key="user.id">{{ user.username }} - {{ user.email }}</li>
+          <li v-for="user in userStore.user" :key="user.id">{{ user.username }} - {{ user.email }}</li>
         </ul>
         <!-- Mostrar botón para crear nuevo usuario solo si es admin -->
-        <div v-if="authStore.auth.data.role === 'admin'">
+        <div v-if="authStore.auth.data.isAdmin === 'true'">
           <button @click="createUser">Crear nuevo usuario</button>
         </div>
       </div>
